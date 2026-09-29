@@ -16,6 +16,7 @@
     "LootPoolAccessor",
     "LootTableAccessor",
     "MechanicalPressBlockEntityMixin",
+    "MountedFluidStorageMixin",
     "ShaftBlockMixin",
     "UseOnContextInvoker"
   ],

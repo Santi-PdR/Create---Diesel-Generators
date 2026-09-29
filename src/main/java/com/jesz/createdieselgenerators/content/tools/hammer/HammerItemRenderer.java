@@ -40,7 +40,7 @@ public class HammerItemRenderer extends CustomRenderedItemModelRenderer {
                     TransformStack.cast(ms)
                             .translate(0.5, -0.2, 0)
                             .scale(0.75f, 0.75f, 1.1f)
-
+                            
                             .rotateZ(Math.abs(time * time * time) * 300)
                             ;
                     renderer.render(model.getOriginalModel(), light);
@@ -62,7 +62,7 @@ public class HammerItemRenderer extends CustomRenderedItemModelRenderer {
                             .translate(0, 0, -0.7)
                             .scale(0.75f, 0.75f, 1.1f)
                             .rotateY(77)
-
+                            
                             .rotateZ(Math.abs(time * time * time) * -180 + 80)
                             ;
                     renderer.render(model.getOriginalModel(), light);
@@ -75,9 +75,9 @@ public class HammerItemRenderer extends CustomRenderedItemModelRenderer {
                         .translate(0, 0, flip ? -1 : 1)
                         .translate(0, 0, -0.6)
                         .rotateY(45)
-
+                        
                         .rotateZ(Math.abs(time * time * time) * 400)
-
+                        
                 ;
                 renderer.render(model.getOriginalModel(), light);
                 ms.popPose();

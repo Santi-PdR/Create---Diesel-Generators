@@ -17,6 +17,7 @@ import com.jesz.createdieselgenerators.content.diesel_engine.modular.ModularDies
 import com.jesz.createdieselgenerators.content.diesel_engine.modular.ModularDieselEngineCTBehavior;
 import com.jesz.createdieselgenerators.content.diesel_engine.modular.ModularDieselEngineGenerator;
 import com.jesz.createdieselgenerators.content.diesel_engine.normal.DieselEngineBlock;
+import com.jesz.createdieselgenerators.content.diesel_engine.EngineStateDisplaySource;
 import com.jesz.createdieselgenerators.content.distillation.DistillationTankBlock;
 import com.jesz.createdieselgenerators.content.distillation.DistillationTankGenerator;
 import com.jesz.createdieselgenerators.content.distillation.DistillationTankModel;
@@ -36,6 +37,7 @@ import com.simibubi.create.AllTags;
 import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.kinetics.BlockStressValues;
 import com.simibubi.create.content.fluids.tank.BoilerHeaters;
+import com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.CreateRegistrate;
@@ -106,6 +108,7 @@ public class CDGBlocks {
                                             .build()
                             )
             )
+            .onRegister(AllDisplayBehaviours.assignDataBehaviour(new EngineStateDisplaySource()))
             .onRegister(movementBehaviour(new DieselEngineMovementBehaviour()))
             .item()
             .tag(AllTags.AllItemTags.CONTRAPTION_CONTROLLED.tag)
@@ -120,6 +123,7 @@ public class CDGBlocks {
             .properties(p -> p.mapColor(MapColor.COLOR_YELLOW))
             .transform(pickaxeOnly())
             .blockstate(new ModularDieselEngineGenerator()::generate)
+            .onRegister(AllDisplayBehaviours.assignDataBehaviour(new EngineStateDisplaySource()))
             .onRegister(connectedTextures(ModularDieselEngineCTBehavior::new))
             .onRegister(movementBehaviour(new DieselEngineMovementBehaviour()))
             .item().model((c, p) -> p.withExistingParent("large_diesel_engine", p.modLoc("block/modular_diesel_engine/item"))).build()
@@ -190,6 +194,7 @@ public class CDGBlocks {
             .transform(pickaxeOnly())
             .transform(pickaxeOnly())
             .blockstate(PumpjackHoleGenerator::blockState)
+            .onRegister(AllDisplayBehaviours.assignDataBehaviour(new OilAmountDisplaySource()))
             .item().model((c, p) -> p.cubeBottomTop("pumpjack_hole", p.modLoc("block/pumpjack_hole_pipe"), p.modLoc("block/pumpjack_hole_base"), p.modLoc("block/pumpjack_hole_pipe"))).build()
             .register();
 

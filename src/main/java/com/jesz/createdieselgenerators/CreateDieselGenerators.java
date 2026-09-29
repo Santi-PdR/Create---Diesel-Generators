@@ -5,6 +5,7 @@ import com.jesz.createdieselgenerators.compat.computercraft.CCProxy;
 import com.jesz.createdieselgenerators.content.molds.MoldType;
 import com.jesz.createdieselgenerators.content.tools.lighter.LighterModel;
 import com.jesz.createdieselgenerators.packets.CDGPackets;
+import com.jesz.createdieselgenerators.ponder.PonderIndex;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
@@ -86,6 +87,7 @@ public class CreateDieselGenerators
 
     public static void clientInit() {
         CDGSpriteShifts.init();
+        PonderIndex.register();
     }
 
     public static ResourceLocation rl(String path) {
