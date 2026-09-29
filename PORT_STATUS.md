@@ -55,5 +55,11 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
   Generators registró sus configuraciones sin errores de dependencias. Los
   errores restantes del log corresponden a mixins/modelos opcionales de otros
   mods de `siege` y a servicios externos sin conexión.
+- Tras revisar un log de carga de mundo creativo, se corrigieron restos de
+  recursos de la versión nueva: loot tables con propiedades de bloque
+  inexistentes, una receta de smithing no válida en 1.20.1 y referencias de
+  partículas de fluidos al atlas equivocado. El build posterior volvió a pasar
+  y el arranque de `test-1` ya no reportó errores de Diesel Generators en esos
+  puntos.
 
 No se ha cambiado el JAR de Create ni las dependencias de las instancias.
