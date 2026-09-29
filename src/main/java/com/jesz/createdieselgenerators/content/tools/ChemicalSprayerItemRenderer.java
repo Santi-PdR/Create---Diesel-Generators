@@ -22,6 +22,14 @@ public class ChemicalSprayerItemRenderer extends CustomRenderedItemModelRenderer
         renderer.render(model.getOriginalModel(), light);
         LocalPlayer player = Minecraft.getInstance().player;
 
+        // The item can be rendered while the client is still opening a GUI
+        // (or while the world is being unloaded).  The old 1.21 renderer
+        // assumed that a local player was always available and dereferenced
+        // it during creative-tab rendering.
+        if (player == null) {
+            return;
+        }
+
         float worldTime = AnimationTickHolder.getRenderTime() / 10;
         float angle = worldTime * ((player.isUsingItem() && player.getItemInHand(player.getUsedItemHand()) == stack) ? -200 : -25);
         angle %= 360;

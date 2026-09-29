@@ -1,7 +1,6 @@
 package com.jesz.createdieselgenerators;
 
 import com.jesz.createdieselgenerators.content.molds.MoldType;
-import com.jesz.createdieselgenerators.content.track_layers_bag.TrackLayersBagItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -61,7 +60,12 @@ public class CDGCreativeTab {
                         output.accept(CDGItems.CHEMICAL_SPRAYER_LIGHTER.get());
                         output.accept(CDGItems.TRACK_LAYERS_BAG.get());
                         output.accept(CDGItems.ENTITY_FILTER.get());
-                        output.accept(TrackLayersBagItem.full());
+                        // Do not construct the 1024-track NBT variant while
+                        // Forge is switching creative tabs.  Create 0.5.1.j
+                        // makes that stack resolve its nested track item on
+                        // the render thread and can stall the GUI.  The
+                        // normal bag remains available here and the filled
+                        // variant is still produced by the item/game logic.
                         MoldType.types.forEach(mt -> {
                             ItemStack moldStack = CDGItems.MOLD.asStack();
                             moldStack.getOrCreateTag().putString("Mold", mt.getId().toString());
@@ -76,4 +80,3 @@ public class CDGCreativeTab {
     }
 
 }
-
