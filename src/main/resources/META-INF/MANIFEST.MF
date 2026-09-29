@@ -2,9 +2,8 @@ Manifest-Version: 1.0
 Specification-Title: createdieselgenerators
 Specification-Vendor: createdieselgenerators
 Specification-Version: 1
-Implementation-Title: create-diesel-generators-20
-Implementation-Version: 1.20.1-1.2g
+Implementation-Title: createdieselgenerators
+Implementation-Version: 1.20.1-1.3.12-create-0.5.1j
 Implementation-Vendor: createdieselgenerators
-Implementation-Timestamp: 2024-02-06T19:38:36+0100
 MixinConfigs: createdieselgenerators.mixins.json
 

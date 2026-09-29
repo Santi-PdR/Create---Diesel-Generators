@@ -40,6 +40,9 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
   display source y mounted storage presentes.
 - JAR instalado en `/home/Santipdr/.sklauncher/instances/test-1/mods/`; el hash
   coincide con `build/libs/`.
+- JAR instalado también en `/home/Santipdr/.sklauncher/instances/siege/mods/`;
+  la copia coincide con el build y conserva Create `0.5.1.j` y Flywheel
+  `0.6.11-13` de esa instancia.
 - Se verificó un arranque real de Forge 47.4.10 usando la instancia `test-1`:
   el mod llegó a la recarga de recursos y no produjo errores de carga de
   clases ni crash del mod. Se corrigieron los blockstates que todavía
@@ -47,5 +50,10 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
   versión antigua. Permanecen avisos visuales menores de texturas de fluidos
   y avisos de otros mods de la instancia, sin fallo de carga de Diesel
   Generators.
+- Se verificó además el arranque real con el conjunto completo de mods de
+  `siege`: Forge llegó al cliente y a la recarga de recursos, y Diesel
+  Generators registró sus configuraciones sin errores de dependencias. Los
+  errores restantes del log corresponden a mixins/modelos opcionales de otros
+  mods de `siege` y a servicios externos sin conexión.
 
 No se ha cambiado el JAR de Create ni las dependencias de las instancias.
