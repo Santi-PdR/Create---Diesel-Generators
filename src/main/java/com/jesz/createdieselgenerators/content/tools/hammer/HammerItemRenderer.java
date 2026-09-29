@@ -24,7 +24,7 @@ public class HammerItemRenderer extends CustomRenderedItemModelRenderer {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         Player player = Minecraft.getInstance().player;
         CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains("ProcessingItem") || player == null)
+        if (transformType == ItemDisplayContext.GUI || !tag.contains("ProcessingItem") || player == null)
             renderer.render(model.getOriginalModel(), light);
         else {
             float time = ((AnimationTickHolder.getTicks() + AnimationTickHolder.getPartialTicks()) % 10) / 10;

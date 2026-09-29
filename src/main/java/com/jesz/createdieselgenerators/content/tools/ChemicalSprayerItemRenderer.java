@@ -26,7 +26,8 @@ public class ChemicalSprayerItemRenderer extends CustomRenderedItemModelRenderer
         // (or while the world is being unloaded).  The old 1.21 renderer
         // assumed that a local player was always available and dereferenced
         // it during creative-tab rendering.
-        if (player == null) {
+        if (transformType == ItemDisplayContext.GUI || player == null) {
+            renderer.render(model.getOriginalModel(), light);
             return;
         }
 

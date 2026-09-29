@@ -25,7 +25,7 @@ public class MoldItemRenderer extends CustomRenderedItemModelRenderer {
     @Override
     protected void render(ItemStack stack, CustomRenderedItemModel model, PartialItemModelRenderer renderer, ItemDisplayContext transformType, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         MoldType type = MoldItem.getMold(stack);
-        if (type == null || type.model == null) {
+        if (transformType == ItemDisplayContext.GUI || type == null || type.model == null) {
             renderer.render(model.getOriginalModel(), light);
             return;
         }
