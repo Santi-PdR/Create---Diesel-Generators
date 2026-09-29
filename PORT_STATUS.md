@@ -16,8 +16,7 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
 - Se añadió el renderizado clásico de respaldo del motor diésel grande para
   cuando Flywheel no puede usar instancing.
 - Se corrigieron las dependencias para Create 0.5.1.j y la metadata Forge.
-- `compileJava` termina correctamente con Java 17. Solo quedan advertencias de
-  mappings de algunos mixins existentes.
+- `compileJava` y `build` terminan correctamente con Java 17.
 
 ## Compatibilidad comprobada
 
@@ -26,7 +25,7 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
 - Flywheel: 0.6.11-13, incluido por Create
 - Build: `compileJava` correcto
 
-## Pendiente antes de considerarlo terminado
+## Verificación final
 
 - Reincorporado y adaptado el plugin/categorías JEI, incluyendo fermentación,
   destilación, casting, moldes, hammering y wire cutting.
@@ -41,8 +40,12 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
   display source y mounted storage presentes.
 - JAR instalado en `/home/Santipdr/.sklauncher/instances/test-1/mods/`; el hash
   coincide con `build/libs/`.
-- El arranque automático con `runClient` no produjo logs ni una ventana en el
-  entorno aislado, por lo que queda como verificación manual dentro de
-  SKLauncher; no se considera una prueba de arranque exitosa.
+- Se verificó un arranque real de Forge 47.4.10 usando la instancia `test-1`:
+  el mod llegó a la recarga de recursos y no produjo errores de carga de
+  clases ni crash del mod. Se corrigieron los blockstates que todavía
+  referenciaban las propiedades `silenced`, `turbocharged` y `north` de la
+  versión antigua. Permanecen avisos visuales menores de texturas de fluidos
+  y avisos de otros mods de la instancia, sin fallo de carga de Diesel
+  Generators.
 
 No se ha cambiado el JAR de Create ni las dependencias de las instancias.
