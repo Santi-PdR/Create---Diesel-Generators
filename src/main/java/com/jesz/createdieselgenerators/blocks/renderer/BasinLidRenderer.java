@@ -16,11 +16,6 @@ public class BasinLidRenderer extends SafeBlockEntityRenderer<BasinLidBlockEntit
    public BasinLidRenderer(Context context) {
    }
 
-   @Override
-   public void render(BasinLidBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
-      renderSafe(be, partialTicks, ms, bufferSource, light, overlay);
-   }
-
    protected void renderSafe(BasinLidBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
       if ((Boolean)be.getBlockState().getValue(BasinLidBlock.ON_A_BASIN)) {
          Direction facing = (Direction)be.getBlockState().getValue(HorizontalKineticBlock.HORIZONTAL_FACING);

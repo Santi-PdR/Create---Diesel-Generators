@@ -25,11 +25,6 @@ public class HugeDieselEngineRenderer extends SafeBlockEntityRenderer<HugeDiesel
    public HugeDieselEngineRenderer(Context context) {
    }
 
-   @Override
-   public void render(HugeDieselEngineBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-      renderSafe(be, partialTicks, ms, buffer, light, overlay);
-   }
-
    protected void renderSafe(HugeDieselEngineBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
       if (!Backend.canUseInstancing(be.getLevel())) {
          Float angle = be.getTargetAngle();

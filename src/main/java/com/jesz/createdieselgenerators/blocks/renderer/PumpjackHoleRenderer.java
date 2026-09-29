@@ -13,11 +13,6 @@ public class PumpjackHoleRenderer extends SafeBlockEntityRenderer<PumpjackHoleBl
    public PumpjackHoleRenderer(Context context) {
    }
 
-   @Override
-   public void render(PumpjackHoleBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-      renderSafe(be, partialTicks, ms, buffer, light, overlay);
-   }
-
    protected void renderSafe(PumpjackHoleBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
       CachedBufferer.partial(PartialModels.PUMPJACK_ROPE, be.getBlockState())
          .translate(0.5, 0.0, 0.5)

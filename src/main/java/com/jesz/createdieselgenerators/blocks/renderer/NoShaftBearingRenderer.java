@@ -21,11 +21,6 @@ public class NoShaftBearingRenderer<T extends KineticBlockEntity & IBearingBlock
    public NoShaftBearingRenderer(Context context) {
    }
 
-   @Override
-   public void render(T be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-      renderSafe(be, partialTicks, ms, buffer, light, overlay);
-   }
-
    protected void renderSafe(T be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
       if (!Backend.canUseInstancing(be.getLevel())) {
          Direction facing = (Direction)be.getBlockState().getValue(BlockStateProperties.FACING);

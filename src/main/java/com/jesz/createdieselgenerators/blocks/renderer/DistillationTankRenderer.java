@@ -24,11 +24,6 @@ public class DistillationTankRenderer extends SafeBlockEntityRenderer<Distillati
    public DistillationTankRenderer(Context context) {
    }
 
-   @Override
-   public void render(DistillationTankBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
-      renderSafe(be, partialTicks, ms, buffer, light, overlay);
-   }
-
    protected void renderSafe(DistillationTankBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
       if (be.isController()) {
          if (be.isBottom()) {
