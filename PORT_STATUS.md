@@ -36,7 +36,13 @@ usando Create 0.5.1.j y el Flywheel incluido en esa versión.
   sources de bomba y motores.
 - Revisar si los valores de estrés necesitan un proveedor explícito adicional
   tras la prueba dentro del juego.
-- Ejecutar el build completo, revisar el JAR final y probar el arranque de
-  `test-1` con el mod instalado.
+- Build completo ejecutado correctamente (`./gradlew build` con Java 17).
+- JAR final auditado: metadata Forge/Create correcta y clases de JEI, Ponder,
+  display source y mounted storage presentes.
+- JAR instalado en `/home/Santipdr/.sklauncher/instances/test-1/mods/`; el hash
+  coincide con `build/libs/`.
+- El arranque automático con `runClient` no produjo logs ni una ventana en el
+  entorno aislado, por lo que queda como verificación manual dentro de
+  SKLauncher; no se considera una prueba de arranque exitosa.
 
 No se ha cambiado el JAR de Create ni las dependencias de las instancias.
