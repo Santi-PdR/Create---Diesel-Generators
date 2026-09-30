@@ -100,63 +100,18 @@ public class DieselEngineScenes {
       scene.title("huge_diesel_engine", "Setting up a Diesel Engine");
       scene.configureBasePlate(0, 0, 5);
       scene.showBasePlate();
-      Selection tank = util.select.fromTo(4, 1, 3, 4, 2, 3);
-      Selection pipes = util.select.fromTo(0, 2, 0, 3, 2, 4);
-      Selection engines = util.select.fromTo(0, 1, 0, 2, 1, 4);
-      Selection shafts = util.select.fromTo(0, 1, 2, 2, 1, 2);
-      Selection shafts2 = util.select.fromTo(3, 1, 2, 4, 1, 2);
-      scene.world.showSection(engines, Direction.DOWN);
-      scene.idle(10);
       scene.overlay
-         .showText(20)
+         .showText(70)
          .attachKeyFrame()
-         .text("Huge Diesel Engines connect to Shafts ...")
-         .pointAt(util.vector.blockSurface(util.grid.at(0, 1, 0), Direction.NORTH))
+         .text("Huge Diesel Engines connect to Powered Engine Shafts.")
          .placeNearTarget();
-      scene.idle(30);
-      scene.world.showSection(shafts2, Direction.DOWN);
-      scene.idle(15);
+      scene.idle(80);
       scene.overlay
-         .showControls(new InputWindowElement(util.vector.topOf(2, 1, 4), Pointing.DOWN).withItem(new ItemStack((ItemLike)AllItems.WRENCH.get())), 15);
-      scene.idle(20);
-      scene.world.modifyBlock(util.grid.at(2, 1, 4), s -> (BlockState)s.setValue(BlockStateProperties.UP, false), false);
-      scene.idle(15);
-      scene.overlay
-         .showControls(new InputWindowElement(util.vector.topOf(2, 1, 4), Pointing.DOWN).withItem(new ItemStack((ItemLike)AllItems.WRENCH.get())), 15);
-      scene.idle(20);
-      scene.world.modifyBlock(util.grid.at(2, 1, 4), s -> (BlockState)s.setValue(BlockStateProperties.UP, true), false);
-      scene.idle(15);
-      scene.world.showSection(tank, Direction.DOWN);
-      scene.idle(15);
-      scene.world.showSection(pipes, Direction.DOWN);
-      scene.idle(15);
-      FuelTypeManager.tryPopulateTags();
-      Supplier<FluidStack> content = () -> {
-         currentFuel = new FluidStack(
-            FuelTypeManager.fuelTypes.isEmpty()
-               ? (Fluid)CDGFluids.DIESEL.get()
-               : FuelTypeManager.fuelTypes.keySet().stream().toList().get(new Random().nextInt(0, FuelTypeManager.fuelTypes.size() - 1)),
-            16000
-         );
-         return currentFuel;
-      };
-      scene.world.modifyBlockEntity(util.grid.at(4, 1, 3), FluidTankBlockEntity.class, be -> be.getTankInventory().fill(content.get(), FluidAction.EXECUTE));
-      scene.idle(15);
-      scene.overlay
-         .showText(40)
+         .showText(80)
          .attachKeyFrame()
-         .text("... they will start generating Kinetic Energy, once you give them some fuel.")
-         .pointAt(util.vector.blockSurface(util.grid.at(0, 1, 0), Direction.NORTH))
+         .text("Build the engine array, connect the shafts, and supply diesel fuel to generate kinetic energy.")
          .placeNearTarget();
-      scene.idle(50);
-      scene.world.modifyKineticSpeed(shafts2, f -> 16.0F);
-      scene.world.modifyKineticSpeed(shafts, f -> 16.0F);
-      scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> -32.0F);
-      scene.idle(30);
-      scene.world.modifyKineticSpeed(shafts2, f -> 128.0F);
-      scene.world.modifyKineticSpeed(shafts, f -> 128.0F);
-      scene.world.modifyKineticSpeed(util.select.position(3, 2, 3), f -> -64.0F);
-      scene.idle(10);
+      scene.idle(90);
    }
 
    public static void silencer(SceneBuilder scene, SceneBuildingUtil util) {
