@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 import com.jozufozu.flywheel.util.transform.TransformStack;
-import net.createmod.catnip.animation.LerpedFloat;
+import com.simibubi.create.foundation.utility.animation.LerpedFloat;
 import net.createmod.catnip.data.Iterate;
 import com.simibubi.create.foundation.fluid.FluidRenderer;
 import com.simibubi.create.foundation.render.CachedBufferer;
