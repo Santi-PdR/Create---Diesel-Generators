@@ -57,6 +57,7 @@ jobs:
           printf 'online-mode=false\n' > run-gametest/server.properties
           set -o pipefail
           timeout 8m ./gradlew --no-daemon --console=plain runGameTestServer 2>&1 | tee build/verification/gametest.log
+          python3 scripts/verify_game_tests.py build/verification/gametest.log
       - name: Report verification failures
         if: failure()
         run: python3 scripts/report_ci_failure.py build/verification/*.log run-gametest/logs/latest.log

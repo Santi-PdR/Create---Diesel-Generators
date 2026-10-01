@@ -28,6 +28,10 @@ minecraft {
     mappings channel: 'official', version: '1.20.1'
 
     runs {
+        // FG 5 defaults to System.exit(0) in the *Gradle daemon* after a
+        // successful run. Disable that hook so CI receives the real result.
+        configureEach { forceExit false }
+
         client {
             workingDirectory project.file('run')
 
