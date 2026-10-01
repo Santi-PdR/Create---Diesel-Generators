@@ -2,16 +2,16 @@
   "type": "createdieselgenerators:bulk_fermenting",
   "ingredients": [
     {
-      "tag": "create:pulpifiable"
+      "tag": "createdieselgenerators:pulpifiable"
     },
     {
-      "tag": "create:pulpifiable"
+      "tag": "createdieselgenerators:pulpifiable"
     },
     {
-      "tag": "create:pulpifiable"
+      "tag": "createdieselgenerators:pulpifiable"
     },
     {
-      "tag": "create:pulpifiable"
+      "tag": "createdieselgenerators:pulpifiable"
     },
     {
       "fluid": "minecraft:water",
@@ -21,10 +21,10 @@
   "processingTime": 400,
   "results": [
     {
-      "item": "create:pulp"
+      "item": "minecraft:paper"
     },
     {
-      "item": "create:pulp",
+      "item": "minecraft:paper",
       "chance": 0.5
     }
   ]

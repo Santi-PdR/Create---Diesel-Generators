@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
     "east": "create:block/encased_pipe",
     "west": "create:block/encased_pipe",

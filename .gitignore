@@ -22,3 +22,7 @@ eclipse
 run
 
 .profileconfig.json
+
+# Python verification tools
+__pycache__/
+*.py[cod]

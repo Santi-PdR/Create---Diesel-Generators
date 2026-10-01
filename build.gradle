@@ -92,7 +92,8 @@ minecraft {
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+// Hand-written resources are authoritative over historical data-generation
+// output. processResources adds only generated paths without a main override.
 
 repositories {
     flatDir { dirs 'libs' }
@@ -207,8 +208,11 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-// The upstream data-generation output overlaps with the historical resources.
-// Keep the first copy so Forge can package the mod without duplicate entries.
 tasks.named('processResources') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from('src/generated/resources') {
+        exclude '.cache/**'
+        exclude { element -> file("src/main/resources/${element.path}").isFile() }
+    }
+    // Do not silently discard any other duplicate introduced by the build.
+    duplicatesStrategy = DuplicatesStrategy.FAIL
 }

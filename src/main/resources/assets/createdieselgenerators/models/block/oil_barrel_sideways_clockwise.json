@@ -1,5 +1,5 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
   	"north": "createdieselgenerators:block/oil_barrel/top",
   	"south": "createdieselgenerators:block/oil_barrel/top",
