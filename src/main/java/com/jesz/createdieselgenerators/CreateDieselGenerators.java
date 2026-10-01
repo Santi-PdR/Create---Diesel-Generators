@@ -52,7 +52,8 @@ public class CreateDieselGenerators
         CDGRecipes.register(modEventBus);
         CDGMenuTypes.register();
         MoldType.register();
-        CDGMountedStorageTypes.register();
+        // Create 0.5.1.j mounts oil barrels through MountedFluidStorageMixin;
+        // this version has no mounted-storage-type registry.
         CDGCreativeTab.register(modEventBus);
 
 
@@ -79,9 +80,11 @@ public class CreateDieselGenerators
     }
 
     public static void clientSetup(final FMLClientSetupEvent event) {
-        ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.getSource(), RenderType.translucent());
-        event.enqueueWork(CreateDieselGenerators::clientInit);
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(CDGFluids.ETHANOL.getSource(), RenderType.translucent());
+            clientInit();
+        });
     }
 
     public static void clientInit() {

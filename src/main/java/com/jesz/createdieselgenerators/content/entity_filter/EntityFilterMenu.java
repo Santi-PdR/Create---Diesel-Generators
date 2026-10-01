@@ -35,6 +35,9 @@ public class EntityFilterMenu extends AbstractFilterMenu {
         super(type, id, inv, contentHolder);
     }
     public void appendSelectedAttribute(EntityAttribute entry, Boolean inverted) {
+        if (entry == null || selectedAttributes.stream().anyMatch(existing ->
+                existing.getFirst().write().equals(entry.write())))
+            return;
         selectedAttributes.add(Pair.of(entry, inverted));
     }
     @Override
@@ -99,7 +102,7 @@ public class EntityFilterMenu extends AbstractFilterMenu {
         if (index == 37)
             return ItemStack.EMPTY;
         if (index == 36) {
-            ghostInventory.setStackInSlot(37, ItemStack.EMPTY);
+            ghostInventory.setStackInSlot(0, ItemStack.EMPTY);
             return ItemStack.EMPTY;
         }
         if (index < 36) {
@@ -115,8 +118,7 @@ public class EntityFilterMenu extends AbstractFilterMenu {
     protected void initAndReadInventory(ItemStack filterItem) {
         super.initAndReadInventory(filterItem);
         selectedAttributes = new ArrayList<>();
-        whitelist = AttributeFilterMenu.WhitelistMode.values()[filterItem.getOrCreateTag()
-                .getInt("Whitelist")];
+        whitelist = EntityFilterItem.getWhitelistMode(filterItem);
         ListTag attributes = filterItem.getOrCreateTag()
                 .getList("MatchedAttributes", Tag.TAG_COMPOUND);
         attributes.forEach(nbt -> {

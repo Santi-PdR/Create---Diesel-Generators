@@ -30,8 +30,13 @@ public interface EntityAttribute {
     }
 
     static EntityAttribute fromNBT(CompoundTag compound) {
+        if (compound == null)
+            return null;
+        ResourceLocation id = ResourceLocation.tryParse(compound.getString("Id"));
+        if (id == null)
+            return null;
         for (EntityAttribute attribute : all){
-            EntityAttribute finalAttribute = attribute.getById(new ResourceLocation(compound.getString("Id")));
+            EntityAttribute finalAttribute = attribute.getById(id);
             if(finalAttribute != null)
                 return finalAttribute.read(compound);
         }
@@ -176,7 +181,10 @@ public interface EntityAttribute {
         }
         @Override
         public EntityAttribute read(CompoundTag tag) {
-            return new IsMob(ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(tag.getString("Entity"))));
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString("Entity"));
+            if (id == null || !ForgeRegistries.ENTITY_TYPES.containsKey(id))
+                return null;
+            return new IsMob(ForgeRegistries.ENTITY_TYPES.getValue(id));
         }
 
         @Override
