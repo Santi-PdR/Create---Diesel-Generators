@@ -190,8 +190,18 @@ def main():
             if len(names) != len(set(names)):
                 errors.append(f"{args.jar}: duplicate jar entries")
             for path, expected in effective.items():
+                # Gradle builds the manifest (including timestamp and mixin
+                # metadata); validate its contract below, not byte equality.
+                if path == "META-INF/MANIFEST.MF":
+                    continue
                 if path not in names or archive.read(path) != expected:
                     errors.append(f"{args.jar}: packaged resource differs from explicit source overlay: {path}")
+            manifest = archive.read("META-INF/MANIFEST.MF").decode("utf-8").replace("\r\n ", "").splitlines()
+            attributes = dict(line.split(": ", 1) for line in manifest if ": " in line)
+            if attributes.get("Implementation-Version") != "1.20.1-1.3.12-create-0.5.1j":
+                errors.append(f"{args.jar}: incorrect implementation version in manifest")
+            if MOD + ".mixins.json" not in attributes.get("MixinConfigs", "").split(","):
+                errors.append(f"{args.jar}: missing mixin manifest entry")
             for path in (MOD + ".mixins.json", MOD + ".refmap.json", "META-INF/mods.toml"):
                 if path not in names:
                     errors.append(f"{args.jar}: missing {path}")
