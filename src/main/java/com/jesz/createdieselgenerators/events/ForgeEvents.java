@@ -6,9 +6,6 @@ import com.jesz.createdieselgenerators.content.andesite_girder.AndesiteGirderWre
 import com.jesz.createdieselgenerators.content.diesel_engine.EngineTypes;
 import com.jesz.createdieselgenerators.content.entity_filter.ReverseLootTable;
 import com.jesz.createdieselgenerators.fuel_type.FuelType;
-import com.jesz.createdieselgenerators.mixins.LootItemAccessor;
-import com.jesz.createdieselgenerators.mixins.LootPoolAccessor;
-import com.jesz.createdieselgenerators.mixins.LootTableAccessor;
 import com.simibubi.create.content.equipment.goggles.GogglesItem;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.foundation.item.TooltipHelper;
@@ -34,18 +31,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -69,31 +61,15 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void loadLootTable(LootTableLoadEvent event){
-        LootTable table = event.getTable();
-        ResourceLocation tableId = table.getLootTableId();
-        if (!tableId.getPath().startsWith("entities/"))
-                return;
-        ((LootTableAccessor)table).getPools().forEach(pool -> {
-            List.of(((LootPoolAccessor) pool).getEntries()).forEach(e -> {
-                if (e instanceof LootItemAccessor lootItem) {
-                    String path = tableId.getPath();
-                    path = path.replaceAll("entities/", "");
-                    EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(tableId.getNamespace(), path));
-                    ReverseLootTable.ALL.computeIfAbsent(lootItem.getItem(), s -> new ArrayList<>()).add(type);
-                }
-            });
-        });
-    }
-
-    @SubscribeEvent
-    public static void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-
+    public static void syncReverseLootTable(net.minecraftforge.event.OnDatapackSyncEvent event) {
+        var packet = new com.jesz.createdieselgenerators.packets.ReverseLootTablePacket(ReverseLootTable.ALL);
+        event.getPlayers().forEach(player -> com.jesz.createdieselgenerators.packets.CDGPackets.getChannel().send(
+                net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player), packet));
     }
 
     @SubscribeEvent
     public static void addReloadListeners(AddReloadListenerEvent event){
-        event.addListener(ReverseLootTable.INSTANCE);
+        event.addListener(new ReverseLootTable(event.getServerResources().getLootData()));
     }
 
     @SubscribeEvent

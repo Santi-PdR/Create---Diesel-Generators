@@ -82,6 +82,12 @@ public class PortClientSmokeTest {
                 if (placed.keySet().stream().anyMatch(pos -> mc.level.getBlockEntity(pos) == null))
                     return;
                 verifyRendererRegistration(mc);
+                check(com.jesz.createdieselgenerators.packets.ReverseLootTablePacket.clientDataReady,
+                        "Server loot-index packet never reached the client");
+                check(com.jesz.createdieselgenerators.content.entity_filter.EntityAttribute.getAllEntityTypesFromStack(
+                        new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.PORKCHOP))
+                        .contains(net.minecraft.world.entity.EntityType.PIG), "Client cannot recognize mob-drop reference items");
+                checks.add("Server loot index synchronized over protocol 4 and recognized a pig drop");
                 check(Backend.canUseInstancing(mc.level), "Software GL did not enable the instanced backend");
                 checks.add("Flywheel INSTANCING enabled; six instance factories registered");
                 previousAngle = ((HugeDieselEngineBlockEntity) mc.level.getBlockEntity(hugePos)).getTargetAngle();

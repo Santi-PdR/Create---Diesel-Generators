@@ -15,7 +15,7 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 @PrefixGameTestTemplate(false)
 public class PacketGameTests {
     @GameTest(template = "port_test_empty")
-    public static void filterPacketPreservesProtocolV3(GameTestHelper helper) {
+    public static void filterPacketPreservesIntAndNbtEncoding(GameTestHelper helper) {
         var data = EntityAttribute.StandardTraits.IS_HOSTILE.write();
         FriendlyByteBuf encoded = new FriendlyByteBuf(Unpooled.buffer());
         FriendlyByteBuf roundTrip = new FriendlyByteBuf(Unpooled.buffer());
@@ -27,7 +27,7 @@ public class PacketGameTests {
             new EntityFilterScreenPacket(encoded).write(roundTrip);
             check(roundTrip.readInt() == FilterScreenPacket.Option.ADD_TAG.ordinal(), "Option did not round-trip");
             check(data.equals(roundTrip.readNbt()), "Attribute did not round-trip");
-            check(CDGPackets.NETWORK_VERSION == 3, "Wire-compatible changes must not change the protocol version");
+            check(CDGPackets.NETWORK_VERSION == 4, "Loot-index sync requires protocol 4 on both peers");
         } finally {
             encoded.release();
             roundTrip.release();
@@ -52,6 +52,34 @@ public class PacketGameTests {
             encoded.writeInt(FilterScreenPacket.Option.ADD_TAG.ordinal());
             encoded.writeNbt(null);
             expectRejected(encoded);
+        } finally {
+            encoded.release();
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "port_test_empty")
+    public static void loadedLootIndexIsCompleteAndIdempotent(GameTestHelper helper) {
+        var first = com.jesz.createdieselgenerators.content.entity_filter.ReverseLootTable.ALL;
+        check(first.getOrDefault(net.minecraft.world.item.Items.PORKCHOP, java.util.List.of())
+                .contains(net.minecraft.world.entity.EntityType.PIG), "Loaded loot index has no pig drops");
+        var rebuilt = com.jesz.createdieselgenerators.content.entity_filter.ReverseLootTable.build(
+                helper.getLevel().getServer().getLootData());
+        check(first.equals(rebuilt), "Rebuilding loot data changes or loses entries");
+        check(rebuilt.values().stream().allMatch(types -> types.stream().distinct().count() == types.size()),
+                "Duplicate loot entries created duplicate entity attributes");
+        helper.succeed();
+    }
+
+    @GameTest(template = "port_test_empty")
+    public static void reverseLootPacketPreservesRegistryIdentifiers(GameTestHelper helper) {
+        var index = com.jesz.createdieselgenerators.content.entity_filter.ReverseLootTable.ALL;
+        FriendlyByteBuf encoded = new FriendlyByteBuf(Unpooled.buffer());
+        try {
+            new ReverseLootTablePacket(index).write(encoded);
+            var decoded = new ReverseLootTablePacket(encoded);
+            check(index.equals(decoded.index), "Loot packet did not round-trip registered items/entities");
+            check(encoded.readableBytes() == 0, "Loot packet left unread data");
         } finally {
             encoded.release();
         }
