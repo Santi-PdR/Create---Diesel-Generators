@@ -9,7 +9,6 @@ import com.jozufozu.flywheel.backend.instancing.InstancedRenderRegistry;
 import com.jozufozu.flywheel.config.BackendType;
 import com.jozufozu.flywheel.config.FlwConfig;
 import com.simibubi.create.foundation.ponder.PonderRegistry;
-import io.netty.buffer.Unpooled;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -18,7 +17,6 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
@@ -125,8 +123,9 @@ public class PortClientSmokeTest {
                 mc.stop();
             }
         } catch (Throwable failure) {
+            System.err.println("Completed client checks: " + String.join("; ", checks));
             failure.printStackTrace();
-            System.err.println("CLIENT_SMOKE_FAILED: " + failure);
+            System.err.println("CLIENT_SMOKE_FAILED at stage " + stage + ": " + failure + "; screen=" + mc.screen);
             System.exit(1);
         }
     }
@@ -229,19 +228,16 @@ public class PortClientSmokeTest {
     }
 
     private static void openFilterScreen(Minecraft mc) {
-        var filter = CDGItems.ENTITY_FILTER.asStack();
-        mc.player.setItemInHand(InteractionHand.MAIN_HAND, filter);
-        FriendlyByteBuf data = new FriendlyByteBuf(Unpooled.buffer());
-        try {
-            data.writeItem(filter);
-            var type = CDGMenuTypes.ENTITY_FILTER.get();
-            var menu = type.create(101, mc.player.getInventory(), data);
-            var factory = MenuScreens.getScreenFactory(type, mc, 101, Component.literal("Entity filter smoke")).orElseThrow();
-            mc.player.containerMenu = menu;
-            mc.setScreen(factory.create(menu, mc.player.getInventory(), Component.literal("Entity filter smoke")));
-        } finally {
-            data.release();
-        }
+        check(MenuScreens.getScreenFactory(CDGMenuTypes.ENTITY_FILTER.get(), mc, 101,
+                Component.literal("Entity filter smoke")).isPresent(), "Menu screen factory was not registered");
+        // Open from the real server so container IDs, the selected stack and
+        // the Forge extra-data packet follow the same path as player input.
+        var server = mc.getSingleplayerServer();
+        server.execute(() -> {
+            var player = server.getPlayerList().getPlayers().get(0);
+            player.setItemInHand(InteractionHand.MAIN_HAND, CDGItems.ENTITY_FILTER.asStack());
+            CDGItems.ENTITY_FILTER.get().use(server.overworld(), player, InteractionHand.MAIN_HAND);
+        });
     }
 
     private static void check(boolean condition, String message) {
