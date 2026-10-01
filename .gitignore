@@ -26,3 +26,6 @@ run
 # Python verification tools
 __pycache__/
 *.py[cod]
+
+# Runtime verification worlds
+run-gametest/
