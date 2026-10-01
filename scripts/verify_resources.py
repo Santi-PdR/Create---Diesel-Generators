@@ -189,6 +189,9 @@ def main():
             names = archive.namelist()
             if len(names) != len(set(names)):
                 errors.append(f"{args.jar}: duplicate jar entries")
+            if any("GameTests" in path or "PortClientSmokeTest" in path
+                   or path.endswith("port_test_empty.nbt") or path.startswith(".cache/") for path in names):
+                errors.append(f"{args.jar}: test-only classes/resources or generation caches were packaged")
             for path, expected in effective.items():
                 # Gradle builds the manifest (including timestamp and mixin
                 # metadata); validate its contract below, not byte equality.
