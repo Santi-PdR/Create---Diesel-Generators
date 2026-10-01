@@ -63,7 +63,9 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void syncReverseLootTable(net.minecraftforge.event.OnDatapackSyncEvent event) {
         var packet = new com.jesz.createdieselgenerators.packets.ReverseLootTablePacket(ReverseLootTable.ALL);
-        event.getPlayers().forEach(player -> com.jesz.createdieselgenerators.packets.CDGPackets.getChannel().send(
+        // getPlayers() was added after the pinned Forge 47.1.30 API.
+        var players = event.getPlayer() == null ? event.getPlayerList().getPlayers() : List.of(event.getPlayer());
+        players.forEach(player -> com.jesz.createdieselgenerators.packets.CDGPackets.getChannel().send(
                 net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> player), packet));
     }
 
