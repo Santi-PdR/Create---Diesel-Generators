@@ -214,7 +214,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
             return null;
 
         axis = KineticBlockEntityRenderer.getRotationAxisOf(shaft);
-        angle = 0;
+        angle = KineticBlockEntityRenderer.getAngleForTe(shaft, shaft.getBlockPos(), axis);
         if (axis == facingAxis)
             return null;
         if (axis.isHorizontal() && (facingAxis == Direction.Axis.X ^ facing.getAxisDirection() == Direction.AxisDirection.POSITIVE))

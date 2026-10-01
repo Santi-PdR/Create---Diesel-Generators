@@ -58,9 +58,20 @@ jobs:
           set -o pipefail
           timeout 8m ./gradlew --no-daemon --console=plain runGameTestServer 2>&1 | tee build/verification/gametest.log
           python3 scripts/verify_game_tests.py build/verification/gametest.log
+      - name: Run client world, models, rendering and Ponder smoke test
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          mkdir -p run-client-smoke/config
+          printf 'renderDistance:2\nsimulationDistance:2\nmaxFps:30\nenableVsync:false\nonboardAccessibility:false\ntutorialStep:none\npauseOnLostFocus:false\n' > run-client-smoke/options.txt
+          printf 'backend="INSTANCING"\n' > run-client-smoke/config/flywheel-client.toml
+          set -o pipefail
+          timeout 12m xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew --no-daemon --console=plain -PportTests runClient 2>&1 | tee build/verification/client.log
+          grep -q '^CLIENT_SMOKE_PASSED$' build/verification/client-smoke.txt
       - name: Report verification failures
         if: failure()
-        run: python3 scripts/report_ci_failure.py build/verification/*.log run-gametest/logs/latest.log
+        run: python3 scripts/report_ci_failure.py build/verification/*.log run-gametest/logs/latest.log run-client-smoke/logs/latest.log
       - name: Upload mod and verification reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -72,4 +83,5 @@ jobs:
             build/verification/
             run/logs/
             run-gametest/logs/
+            run-client-smoke/logs/
           if-no-files-found: ignore

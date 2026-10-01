@@ -33,7 +33,11 @@ minecraft {
         configureEach { forceExit false }
 
         client {
-            workingDirectory project.file('run')
+            workingDirectory project.file(project.hasProperty('portTests') ? 'run-client-smoke' : 'run')
+            if (project.hasProperty('portTests')) {
+                property 'cdg.port.clientSmoke', 'true'
+                property 'fml.earlyprogresswindow', 'false'
+            }
 
             property 'forge.logging.markers', 'REGISTRIES'
 
@@ -46,6 +50,8 @@ minecraft {
             mods {
                 createdieselgenerators {
                     source sourceSets.main
+                    if (project.hasProperty('portTests'))
+                        source sourceSets.gameTest
                 }
             }
         }

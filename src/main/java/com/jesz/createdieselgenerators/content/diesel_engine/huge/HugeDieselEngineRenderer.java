@@ -49,7 +49,7 @@ public class HugeDieselEngineRenderer extends SafeBlockEntityRenderer<HugeDiesel
         transformed(CDGPartialModels.ENGINE_PISTON, state, facing, roll90).translate(0, piston, 0).light(light).renderInto(ms, vb);
         transformed(CDGPartialModels.ENGINE_PISTON_LINKAGE, state, facing, roll90).translate(0, 1, 0).translate(0, piston, 0).translate(0, .25, .5).rotateX(sine2 * 23).translate(0, -.25, -.5).light(light).renderInto(ms, vb);
         if (shaft.isEngineForConnectorDisplay(be.getBlockPos()))
-            transformed(CDGPartialModels.ENGINE_PISTON_CONNECTOR, state, facing, roll90).translate(0, 2, 0).rotateXRadians(-angle + Mth.HALF_PI).light(light).renderInto(ms, vb);
+            transformed(CDGPartialModels.ENGINE_PISTON_CONNECTOR, state, facing, roll90).translate(0, 2, 0).rotateXRadians(-angle + Mth.HALF_PI - (facingAxis.isVertical() ? Mth.PI : 0)).light(light).renderInto(ms, vb);
     }
 
     private SuperByteBuffer transformed(PartialModel model, BlockState state, Direction facing, boolean roll90) {
