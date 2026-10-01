@@ -3,6 +3,8 @@ package com.jesz.createdieselgenerators.content.diesel_engine;
 import com.jesz.createdieselgenerators.CDGConfig;
 import com.jesz.createdieselgenerators.CDGRegistries;
 import com.jesz.createdieselgenerators.content.diesel_engine.normal.DieselEngineBlock;
+import com.jesz.createdieselgenerators.content.diesel_engine.normal.DieselEngineBlockEntity;
+import com.jesz.createdieselgenerators.content.diesel_engine.modular.ModularDieselEngineBlockEntity;
 import com.jesz.createdieselgenerators.fuel_type.FuelType;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import net.minecraftforge.fluids.FluidStack;
@@ -11,6 +13,10 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 public interface IEngine {
 
     default boolean enabled() {
+        EngineTypes type = self() instanceof DieselEngineBlockEntity ? EngineTypes.NORMAL
+                : self() instanceof ModularDieselEngineBlockEntity ? EngineTypes.MODULAR : EngineTypes.HUGE;
+        if (!type.enabled())
+            return false;
         if (validFS())
             return !(CDGConfig.ENGINES_DISABLED_WITH_REDSTONE.get() && self().getBlockState().getValue(DieselEngineBlock.POWERED));
         return false;
@@ -37,8 +43,20 @@ public interface IEngine {
         return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).getGenerated(self()).strength() / speed;
     }
 
+    default float getUpgradedFuelCapacity(int engineCount) {
+        float speed = getFuelSpeed();
+        float upgradedSpeed = getUpgrade().getSpeed(speed, this);
+        // Empty tanks (or an upgrade configured with zero speed) must not put
+        // 0 * Infinity into Create's kinetic network or trigger endless updates.
+        if (speed == 0 || upgradedSpeed == 0)
+            return 0;
+        return getUpgrade().getCapacity(getFuelCapacity() * engineCount * speed / upgradedSpeed, this);
+    }
+
     default float getFuelBurnRate() {
-        return FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).getGenerated(self()).burn();
+        float rate = FuelType.getTypeFor(self().getLevel().registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE), fs().getFluid()).getGenerated(self()).burn();
+        return getUpgrade() == EngineUpgrades.TURBOCHARGER
+                ? (float) (rate * CDGConfig.TURBOCHARGED_ENGINE_BURN_RATE_MULTIPLIER.get()) : rate;
     }
 
     default float getFuelSoundPitch() {

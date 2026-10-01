@@ -118,7 +118,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
 
     @Override
     public float calculateAddedStressCapacity() {
-        float capacity = upgrade.getCapacity(getFuelCapacity() * getHeight() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        float capacity = getUpgradedFuelCapacity(getHeight());
         lastCapacityProvided = capacity;
         return capacity;
     }
@@ -155,7 +155,7 @@ public class ModularDieselEngineBlockEntity extends GeneratingKineticBlockEntity
             return;
         }
 
-        float fuelCapacity = upgrade.getCapacity(getFuelCapacity() * getHeight() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        float fuelCapacity = getUpgradedFuelCapacity(getHeight());
         if (!level.isClientSide && (lastSpeed != getGeneratedSpeed() || lastCapacity != fuelCapacity)) {
             reActivateSource = true;
             lastSpeed = getGeneratedSpeed();

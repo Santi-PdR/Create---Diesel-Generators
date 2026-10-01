@@ -21,13 +21,15 @@ public abstract class EntityMixin implements IEntity {
 
     @Inject(method="load", at = @At("HEAD"))
     public void load(CompoundTag tag, CallbackInfo ci) {
-        if(tag.contains("TurretPos", Tag.TAG_COMPOUND))
-            create_diesel_generators$turretPos = NbtUtils.readBlockPos(tag.getCompound("TurretPos"));
+        create_diesel_generators$turretPos = tag.contains("TurretPos", Tag.TAG_COMPOUND)
+                ? NbtUtils.readBlockPos(tag.getCompound("TurretPos")) : null;
     }
-    @Inject(method="save", at = @At("HEAD"))
-    public void save(CompoundTag tag, CallbackInfoReturnable<Boolean> ci) {
+    @Inject(method="saveWithoutId", at = @At("RETURN"))
+    public void save(CompoundTag tag, CallbackInfoReturnable<CompoundTag> ci) {
         if(create_diesel_generators$turretPos != null)
-            tag.put("TurretPos", NbtUtils.writeBlockPos(create_diesel_generators$turretPos));
+            ci.getReturnValue().put("TurretPos", NbtUtils.writeBlockPos(create_diesel_generators$turretPos));
+        else
+            ci.getReturnValue().remove("TurretPos");
     }
 
     @Override

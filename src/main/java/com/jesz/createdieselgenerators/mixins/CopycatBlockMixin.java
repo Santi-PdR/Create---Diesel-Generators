@@ -23,14 +23,15 @@ public class CopycatBlockMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     public void use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stackInHand = player.getItemInHand(hand);
-        if(stackInHand.getItem() instanceof DyeItem di){
-            if(level.getBlockEntity(pos) instanceof CopycatBlockEntity be){
-                if(CDGBlocks.OIL_BARREL.has(be.getMaterial()))
-                    be.setMaterial(be.getMaterial().setValue(OilBarrelBlock.OIL_BARREL_COLOR, OilBarrelBlock.OilBarrelColor.getForDyeColor(di.getDyeColor())));
+        if (stackInHand.getItem() instanceof DyeItem dye && level.getBlockEntity(pos) instanceof CopycatBlockEntity be
+                && CDGBlocks.OIL_BARREL.has(be.getMaterial())) {
+            if (!level.isClientSide) {
+                be.setMaterial(be.getMaterial().setValue(OilBarrelBlock.OIL_BARREL_COLOR,
+                        OilBarrelBlock.OilBarrelColor.getForDyeColor(dye.getDyeColor())));
+                if (!player.isCreative())
+                    stackInHand.shrink(1);
             }
-            if(!player.isCreative())
-                stackInHand.shrink(1);
-            cir.setReturnValue(InteractionResult.SUCCESS);
+            cir.setReturnValue(InteractionResult.sidedSuccess(level.isClientSide));
         }
     }
 
