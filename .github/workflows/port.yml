@@ -27,10 +27,22 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+      - name: Verify bundled Create API
+        run: python3 scripts/verify_create_api.py
       - name: Compile against Forge and Create
-        run: ./gradlew --no-daemon --console=plain compileJava
+        run: |
+          mkdir -p build/verification
+          set -o pipefail
+          ./gradlew --no-daemon --console=plain compileJava 2>&1 | tee build/verification/compile.log
       - name: Build reobfuscated mod
-        run: ./gradlew --no-daemon --console=plain build
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --console=plain build 2>&1 | tee build/verification/build.log
+      - name: Report verification failures
+        if: failure()
+        run: python3 scripts/report_ci_failure.py build/verification/*.log
       - name: Upload mod and verification reports
         if: always()
         uses: actions/upload-artifact@v4

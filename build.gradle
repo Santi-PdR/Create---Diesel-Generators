@@ -142,7 +142,6 @@ dependencies {
     // Create 0.5.1.j is supplied by the target installation because this
     // release is no longer published in the Create Maven repository.
     implementation fg.deobf('com.simibubi.create:create:0.5.1.j')
-    implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}"))
     compileOnly fg.deobf('com.jozufozu.flywheel:flywheel-forge:0.6.11-13')
     compileOnly fg.deobf('com.tterrag.registrate:Registrate-MC1.20:1.3.3')
     runtimeOnly fg.deobf('com.jozufozu.flywheel:flywheel-forge:0.6.11-13')

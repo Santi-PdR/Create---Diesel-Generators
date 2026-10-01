@@ -7,7 +7,7 @@ import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 import com.jozufozu.flywheel.util.transform.TransformStack;
 import com.simibubi.create.foundation.utility.animation.LerpedFloat;
-import net.createmod.catnip.data.Iterate;
+import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.fluid.FluidRenderer;
 import com.simibubi.create.foundation.render.CachedBufferer;
 import net.minecraft.client.renderer.MultiBufferSource;

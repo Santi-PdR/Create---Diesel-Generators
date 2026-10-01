@@ -4,12 +4,11 @@ import com.jesz.createdieselgenerators.CDGBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.decoration.girder.GirderBlock;
-import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.outliner.Outliner;
+import com.simibubi.create.foundation.utility.Iterate;
+import com.simibubi.create.foundation.utility.Pair;
+import com.simibubi.create.foundation.utility.VecHelper;
 import com.simibubi.create.foundation.placement.IPlacementHelper;
-import net.createmod.catnip.theme.Color;
+import com.simibubi.create.foundation.utility.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -89,7 +88,7 @@ public class AndesiteGirderWrenchBehaviour {
                                 .getNormal())
                         .scale(0.1 * normalMultiplier));
 
-        Outliner.getInstance().showAABB("andesiteGirderWrench", new AABB(corner1, corner2))
+        CreateClient.OUTLINER.showAABB("andesiteGirderWrench", new AABB(corner1, corner2))
                 .lineWidth(1 / 32f)
                 .colored(new Color(95, 95, 255));
     }

@@ -2,7 +2,7 @@ package com.jesz.createdieselgenerators.content.entity_filter;
 
 import com.simibubi.create.content.logistics.filter.AbstractFilterMenu;
 import com.simibubi.create.content.logistics.filter.AttributeFilterMenu;
-import net.createmod.catnip.data.Pair;
+import com.simibubi.create.foundation.utility.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
