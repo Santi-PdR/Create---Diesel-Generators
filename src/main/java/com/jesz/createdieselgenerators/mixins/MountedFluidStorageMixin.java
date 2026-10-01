@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MountedFluidStorage.class)
 public abstract class MountedFluidStorageMixin {
-    @Shadow protected abstract void onFluidStackChanged(FluidStack stack);
+    @Shadow(remap = false) protected abstract void onFluidStackChanged(FluidStack stack);
 
     @Inject(method = "canUseAsStorage(Lnet/minecraft/world/level/block/entity/BlockEntity;)Z", at = @At("HEAD"), cancellable = true, remap = false)
     private static void canUseAsStorage(BlockEntity be, CallbackInfoReturnable<Boolean> cir) {

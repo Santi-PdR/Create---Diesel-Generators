@@ -8,6 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(BasinBlockEntity.class)
 public interface BasinBlockEntityAccessor {
-    @Accessor
+    @Accessor(remap = false)
     LazyOptional<IItemHandlerModifiable> getItemCapability();
 }

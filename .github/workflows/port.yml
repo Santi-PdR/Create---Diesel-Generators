@@ -33,12 +33,15 @@ jobs:
         run: |
           mkdir -p build/verification
           set -o pipefail
-          { python3 scripts/verify_create_api.py && python3 scripts/verify_resources.py; } 2>&1 | tee build/verification/resources.log
+          { python3 scripts/verify_create_api.py && python3 scripts/verify_mixins.py && python3 scripts/verify_resources.py; } 2>&1 | tee build/verification/resources.log
       - name: Compile against Forge and Create
         run: |
           mkdir -p build/verification
           set -o pipefail
           ./gradlew --no-daemon --console=plain compileJava 2>&1 | tee build/verification/compile.log
+          if grep -F 'Unable to locate obfuscation mapping for' build/verification/compile.log; then
+            exit 1
+          fi
       - name: Build reobfuscated mod
         run: |
           set -o pipefail
