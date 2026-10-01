@@ -21,7 +21,10 @@ import java.util.function.Predicate;
 
 public interface EntityAttribute {
     List<EntityAttribute> all = new LinkedList<>();
-    EntityAttribute STANDARD_TRAITS = register(StandardTraits.IS_HOSTILE);
+    // An enum implementing an interface with default methods initializes the
+    // interface *before* its enum constants. Register a lazy prototype instead
+    // of an as-yet-null IS_HOSTILE when the enum is the first entry point.
+    EntityAttribute STANDARD_TRAITS = register(new StandardTraitsPrototype());
     EntityAttribute IS_MOB = register(new IsMob(EntityType.PIG));
 
     static EntityAttribute register(EntityAttribute attribute) {
@@ -155,6 +158,34 @@ public interface EntityAttribute {
         public Component format(boolean inverted) {
             return CreateDieselGenerators.lang("entity_attributes."+getId().getPath()+(inverted ? ".inverted" : ""));
         }
+    }
+
+    class StandardTraitsPrototype implements EntityAttribute {
+        @Override
+        public ResourceLocation getId() { return StandardTraits.IS_HOSTILE.getId(); }
+
+        @Override
+        public EntityAttribute getById(ResourceLocation id) { return StandardTraits.IS_HOSTILE.getById(id); }
+
+        @Override
+        public boolean test(Entity entity) { return StandardTraits.IS_HOSTILE.test(entity); }
+
+        @Override
+        public EntityAttribute read(CompoundTag tag) { return StandardTraits.IS_HOSTILE.read(tag); }
+
+        @Override
+        public CompoundTag write() { return StandardTraits.IS_HOSTILE.write(); }
+
+        @Override
+        public List<EntityAttribute> listAttributesOf(ItemStack stack) {
+            return StandardTraits.IS_HOSTILE.listAttributesOf(stack);
+        }
+
+        @Override
+        public boolean appliesTo(ItemStack stack) { return StandardTraits.IS_HOSTILE.appliesTo(stack); }
+
+        @Override
+        public Component format(boolean inverted) { return StandardTraits.IS_HOSTILE.format(inverted); }
     }
 
     class IsMob implements EntityAttribute {

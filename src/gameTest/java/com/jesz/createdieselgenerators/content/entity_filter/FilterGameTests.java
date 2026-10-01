@@ -30,6 +30,10 @@ public class FilterGameTests {
         check(EntityAttribute.fromNBT(tag) == null, "Invalid entity ID was accepted");
         tag.putString("Entity", "createdieselgenerators:removed_entity");
         check(EntityAttribute.fromNBT(tag) == null, "Unknown entity was silently replaced with a default");
+        check(EntityAttribute.STANDARD_TRAITS != null && EntityAttribute.all.stream().noneMatch(a -> a == null),
+                "Enum-first initialization registered a null trait prototype");
+        var hostile = EntityAttribute.StandardTraits.IS_HOSTILE;
+        check(EntityAttribute.fromNBT(hostile.write()) == hostile, "Standard trait was lost during initialization");
         EntityAttribute pig = new EntityAttribute.IsMob(EntityType.PIG);
         check(pig.write().equals(EntityAttribute.fromNBT(pig.write()).write()), "Valid attribute did not round-trip");
         helper.succeed();
