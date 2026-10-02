@@ -2,18 +2,25 @@
   "type": "createdieselgenerators:compression_molding",
   "ingredients": [
     {
-      "tag": "forge:ingots/hop_graphite",
-      "count": 4
+      "tag": "forge:ingots/hop_graphite"
+    },
+    {
+      "tag": "forge:ingots/hop_graphite"
+    },
+    {
+      "tag": "forge:ingots/hop_graphite"
+    },
+    {
+      "tag": "forge:ingots/hop_graphite"
     }
   ],
   "mold": "createdieselgenerators:lines",
   "results": [
     {
       "item": "immersiveengineering:graphite_electrode",
-      "nbt":"{graphDmg:48000}"
+      "nbt": "{graphDmg:48000}"
     }
   ],
-
   "conditions": [
     {
       "type": "forge:mod_loaded",

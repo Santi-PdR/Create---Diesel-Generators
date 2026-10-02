@@ -1,0 +1,89 @@
+name: Forge 1.20.1 port
+
+on:
+  push:
+    branches:
+      - main
+      - 'arena/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: port-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+      - name: Clean build outputs
+        run: ./gradlew --no-daemon --console=plain clean
+      - name: Verify bundled Create API and resources
+        run: |
+          mkdir -p build/verification
+          set -o pipefail
+          { python3 scripts/verify_create_api.py && python3 scripts/verify_mixins.py && python3 scripts/verify_resources.py; } 2>&1 | tee build/verification/resources.log
+      - name: Compile against Forge and Create
+        run: |
+          mkdir -p build/verification
+          set -o pipefail
+          ./gradlew --no-daemon --console=plain compileJava 2>&1 | tee build/verification/compile.log
+          if grep -F 'Unable to locate obfuscation mapping for' build/verification/compile.log; then
+            exit 1
+          fi
+      - name: Build reobfuscated mod
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --console=plain build 2>&1 | tee build/verification/build.log
+      - name: Verify packaged resources and mixin refmap
+        run: |
+          set -o pipefail
+          python3 scripts/verify_resources.py --jar build/libs/createdieselgenerators-1.20.1-1.3.12-create-0.5.1j.jar 2>&1 | tee build/verification/packaging.log
+      - name: Run Forge GameTest regressions
+        run: |
+          mkdir -p run-gametest
+          printf 'eula=true\n' > run-gametest/eula.txt
+          printf 'online-mode=false\n' > run-gametest/server.properties
+          set -o pipefail
+          timeout 8m ./gradlew --no-daemon --console=plain runGameTestServer 2>&1 | tee build/verification/gametest.log
+          python3 scripts/verify_game_tests.py build/verification/gametest.log
+      - name: Run client world, models, rendering and Ponder smoke test
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          mkdir -p run-client-smoke/config
+          printf 'renderDistance:2\nsimulationDistance:2\nmaxFps:30\nenableVsync:false\nonboardAccessibility:false\ntutorialStep:none\npauseOnLostFocus:false\n' > run-client-smoke/options.txt
+          printf 'backend="INSTANCING"\n' > run-client-smoke/config/flywheel-client.toml
+          set -o pipefail
+          timeout 12m xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew --no-daemon --console=plain -PportTests runClient 2>&1 | tee build/verification/client.log
+          grep -q '^CLIENT_SMOKE_PASSED$' build/verification/client-smoke.txt
+      - name: Report verification failures
+        if: failure()
+        run: python3 scripts/report_ci_failure.py build/verification/*.log run-gametest/logs/latest.log run-client-smoke/logs/latest.log
+      - name: Upload mod and verification reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forge-1.20.1-port
+          path: |
+            build/libs/*.jar
+            build/reports/
+            build/verification/
+            run/logs/
+            run-gametest/logs/
+            run-client-smoke/logs/
+          if-no-files-found: ignore

@@ -2,7 +2,7 @@ package com.jesz.createdieselgenerators.content.diesel_engine.normal;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
-import net.createmod.catnip.math.VecHelper;
+import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;

@@ -21,7 +21,10 @@ import java.util.function.Predicate;
 
 public interface EntityAttribute {
     List<EntityAttribute> all = new LinkedList<>();
-    EntityAttribute STANDARD_TRAITS = register(StandardTraits.IS_HOSTILE);
+    // An enum implementing an interface with default methods initializes the
+    // interface *before* its enum constants. Register a lazy prototype instead
+    // of an as-yet-null IS_HOSTILE when the enum is the first entry point.
+    EntityAttribute STANDARD_TRAITS = register(new StandardTraitsPrototype());
     EntityAttribute IS_MOB = register(new IsMob(EntityType.PIG));
 
     static EntityAttribute register(EntityAttribute attribute) {
@@ -30,8 +33,13 @@ public interface EntityAttribute {
     }
 
     static EntityAttribute fromNBT(CompoundTag compound) {
+        if (compound == null)
+            return null;
+        ResourceLocation id = ResourceLocation.tryParse(compound.getString("Id"));
+        if (id == null)
+            return null;
         for (EntityAttribute attribute : all){
-            EntityAttribute finalAttribute = attribute.getById(new ResourceLocation(compound.getString("Id")));
+            EntityAttribute finalAttribute = attribute.getById(id);
             if(finalAttribute != null)
                 return finalAttribute.read(compound);
         }
@@ -152,6 +160,34 @@ public interface EntityAttribute {
         }
     }
 
+    class StandardTraitsPrototype implements EntityAttribute {
+        @Override
+        public ResourceLocation getId() { return StandardTraits.IS_HOSTILE.getId(); }
+
+        @Override
+        public EntityAttribute getById(ResourceLocation id) { return StandardTraits.IS_HOSTILE.getById(id); }
+
+        @Override
+        public boolean test(Entity entity) { return StandardTraits.IS_HOSTILE.test(entity); }
+
+        @Override
+        public EntityAttribute read(CompoundTag tag) { return StandardTraits.IS_HOSTILE.read(tag); }
+
+        @Override
+        public CompoundTag write() { return StandardTraits.IS_HOSTILE.write(); }
+
+        @Override
+        public List<EntityAttribute> listAttributesOf(ItemStack stack) {
+            return StandardTraits.IS_HOSTILE.listAttributesOf(stack);
+        }
+
+        @Override
+        public boolean appliesTo(ItemStack stack) { return StandardTraits.IS_HOSTILE.appliesTo(stack); }
+
+        @Override
+        public Component format(boolean inverted) { return StandardTraits.IS_HOSTILE.format(inverted); }
+    }
+
     class IsMob implements EntityAttribute {
 
         EntityType<?> type;
@@ -176,7 +212,10 @@ public interface EntityAttribute {
         }
         @Override
         public EntityAttribute read(CompoundTag tag) {
-            return new IsMob(ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(tag.getString("Entity"))));
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString("Entity"));
+            if (id == null || !ForgeRegistries.ENTITY_TYPES.containsKey(id))
+                return null;
+            return new IsMob(ForgeRegistries.ENTITY_TYPES.getValue(id));
         }
 
         @Override

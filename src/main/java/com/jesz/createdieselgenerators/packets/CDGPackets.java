@@ -14,10 +14,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public enum CDGPackets {
-    ENTITY_FILTER_SCREEN(EntityFilterScreenPacket.class, EntityFilterScreenPacket::new, NetworkDirection.PLAY_TO_SERVER);
+    ENTITY_FILTER_SCREEN(EntityFilterScreenPacket.class, EntityFilterScreenPacket::new, NetworkDirection.PLAY_TO_SERVER),
+    REVERSE_LOOT_TABLE(ReverseLootTablePacket.class, ReverseLootTablePacket::new, NetworkDirection.PLAY_TO_CLIENT);
 
     public static final ResourceLocation CHANNEL_NAME = CreateDieselGenerators.rl("main");
-    public static final int NETWORK_VERSION = 3;
+    // Protocol 4 adds the server-to-client loot index; v3 peers cannot decode it.
+    public static final int NETWORK_VERSION = 4;
     public static final String NETWORK_VERSION_STR = String.valueOf(NETWORK_VERSION);
     private static SimpleChannel channel;
 

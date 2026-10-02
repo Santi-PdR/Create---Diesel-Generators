@@ -42,8 +42,9 @@ public class PumpjackCrankInstance extends KineticBlockEntityInstance<PumpjackCr
         pose = new PoseStack();
         transform = TransformStack.cast(pose);
         transform.translate(getInstancePosition());
-        if (xAxis) transform.translate(.5, 1.25, 0).translate(cos, sin, 0).rotateZ(Math.atan2(-1000 - sin - 1.25 - pos.getY(), -cos - .5) * 180 / Math.PI - 90);
-        else transform.translate(0, 1.25, .5).translate(0, sin, cos).rotateY(90).rotateZ(Math.atan2(-cos - .5, -1000 - sin - 1.25 - pos.getY()) * 180 / Math.PI);
+        double rodAngle = PumpjackCrankGeometry.rodAngle(blockEntity, angle, AnimationTickHolder.getPartialTicks());
+        if (xAxis) transform.translate(.5, 1.25, 0).translate(cos, sin, 0).rotateZ(rodAngle);
+        else transform.translate(0, 1.25, .5).translate(0, sin, cos).rotateY(90).rotateZ(rodAngle);
         (large ? largeRod : rod).setTransform(pose);
         (large ? rod : largeRod).setEmptyTransform();
     }

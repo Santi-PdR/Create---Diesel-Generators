@@ -4,17 +4,11 @@ import com.jesz.createdieselgenerators.CDGItems;
 import com.jesz.createdieselgenerators.CreateDieselGenerators;
 import com.jesz.createdieselgenerators.mixins.UseOnContextInvoker;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.Create;
-import com.simibubi.create.content.equipment.clipboard.ClipboardBlockItem;
-import com.simibubi.create.content.equipment.clipboard.ClipboardOverrides;
-import com.simibubi.create.content.trains.track.TrackBlock;
 import com.simibubi.create.content.trains.track.TrackBlockItem;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateItemModelProvider;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -26,13 +20,8 @@ import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -58,26 +47,35 @@ public class TrackLayersBagItem extends Item {
     }
 
     int add(ItemStack bag, ItemStack stack) {
-        if (!stack.isEmpty() && stack.getItem() instanceof TrackBlockItem) {
-            CompoundTag tag = bag.getOrCreateTag();
+        if (stack.isEmpty() || !(stack.getItem() instanceof TrackBlockItem))
+            return 0;
+        ItemStack stored = getTracks(bag);
+        if (!stored.isEmpty() && !ItemStack.isSameItemSameTags(stack, stored))
+            return 0;
+        int oldCount = stored.getCount();
+        int added = Math.min(stack.getCount(), 1024 - oldCount);
+        if (added <= 0)
+            return 0;
+        if (stored.isEmpty())
+            stored = stack.copy();
+        stored.setCount(oldCount + added);
+        saveTracks(bag, stored);
+        return added;
+    }
 
-            ItemStack stackInBag = getTracks(bag);
-            if(!ItemStack.isSameItemSameTags(stack, stackInBag) && !stackInBag.isEmpty())
-                return 0;
-
-            int oldCount = stackInBag.getCount();
-            if(stackInBag.isEmpty())
-                stackInBag = stack.copy();
-            else
-                stackInBag.setCount(Math.min(oldCount + stack.getCount(), 1024));
-
-            tag.putInt("Count", stackInBag.getCount());
-            tag.put("Item", stackInBag.save(new CompoundTag()));
-
-
-            return Math.min(stack.getCount(), 1024 - oldCount);
+    static void saveTracks(ItemStack bag, ItemStack tracks) {
+        CompoundTag tag = bag.getOrCreateTag();
+        int count = tracks.getCount();
+        tag.putInt("Count", count);
+        if (count == 0) {
+            tag.remove("Item");
+            return;
         }
-        return 0;
+        // ItemStack's 1.20.1 Count is a signed byte. Store a representative
+        // item and keep the actual bag quantity only in our integer field.
+        ItemStack template = tracks.copy();
+        template.setCount(1);
+        tag.put("Item", template.save(new CompoundTag()));
     }
 
     static ItemStack removeOne(ItemStack stack) {
@@ -89,14 +87,8 @@ public class TrackLayersBagItem extends Item {
 
         ItemStack savedStack = extractedStack.copy();
         savedStack.shrink(64);
-        tag.putInt("Count", savedStack.getCount());
-        tag.put("Item", savedStack.save(new CompoundTag()));
+        saveTracks(stack, savedStack);
         extractedStack.setCount(Math.min(64, extractedStack.getCount()));
-
-        if(savedStack.getCount() == 0){
-            tag.remove("Item");
-            tag.putInt("Count", 0);
-        }
         return extractedStack;
     }
 
@@ -156,58 +148,48 @@ public class TrackLayersBagItem extends Item {
     }
 
     public static ItemStack getTracks(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        if (!tag.contains("Item"))
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains("Item"))
             return ItemStack.EMPTY;
-        ItemStack tracks = ItemStack.of(tag.getCompound("Item"));
-        tracks.setCount(tag.getInt("Count"));
+        CompoundTag item = tag.getCompound("Item").copy();
+        item.putByte("Count", (byte) 1); // Also read legacy full-bag Count=0/-128 NBT.
+        ItemStack tracks = ItemStack.of(item);
+        if (tracks.isEmpty() || !(tracks.getItem() instanceof TrackBlockItem))
+            return ItemStack.EMPTY;
+        tracks.setCount(Math.max(0, Math.min(1024, tag.getInt("Count"))));
         return tracks;
     }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        ItemStack stack = context.getItemInHand();
-        ItemStack tracks = getTracks(stack);
-        if(tracks.isEmpty())
-            return super.useOn(context);
-        BlockState clickedState = context.getLevel().getBlockState(context.getClickedPos());
-        if(clickedState.getBlock() instanceof TrackBlock block){
-
-        }else {
-            CompoundTag tag = stack.getOrCreateTag();
-            tag.putInt("Count", Math.max(0, tag.getInt("Count") - 1));
-
-
-            return ((TrackBlockItem) tracks.getItem()).place(new BlockPlaceContext(
-                    context.getLevel(), context.getPlayer(), context.getHand(), tracks, ((UseOnContextInvoker)context).cdg_getHitResult()));
+        ItemStack bag = context.getItemInHand();
+        ItemStack tracks = getTracks(bag);
+        if (tracks.isEmpty())
+            return InteractionResult.PASS;
+        Player player = context.getPlayer();
+        if (player == null) {
+            InteractionResult result = tracks.getItem().useOn(new BagTrackContext(context, tracks));
+            saveTracks(bag, tracks);
+            return result;
         }
-        return InteractionResult.SUCCESS;
+        // Create's curve placement counts/removes materials from the player's
+        // inventory and clears selection on the actual held stack. Temporarily
+        // expose the bag's tracks to that code, then restore the bag even on failure.
+        ItemStack held = player.getItemInHand(context.getHand());
+        player.setItemInHand(context.getHand(), tracks);
+        try {
+            return tracks.getItem().useOn(new BagTrackContext(context, tracks));
+        } finally {
+            saveTracks(bag, player.getItemInHand(context.getHand()));
+            player.setItemInHand(context.getHand(), held);
+        }
     }
 
-    private InteractionResult place(BlockPlaceContext context, BlockItem item) {
-        if (!context.canPlace())
-            return InteractionResult.FAIL;
-
-        BlockPos pos = context.getClickedPos();
-        Level level = context.getLevel();
-        Player player = context.getPlayer();
-
-        BlockState blockstate = item.getBlock().getStateForPlacement(context);
-        CollisionContext collision = player == null ? CollisionContext.empty() : CollisionContext.of(player);
-
-        if (!blockstate.canSurvive(level, pos) || !level.isUnobstructed(blockstate, pos, collision)) {
-            return InteractionResult.FAIL;
-        } else if (!level.setBlock(pos, blockstate, 11)) {
-            return InteractionResult.FAIL;
-        } else {
-            BlockState clickedState = level.getBlockState(pos);
-
-            level.gameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Context.of(player, clickedState));
-            SoundType sound = clickedState.getSoundType(level, pos, context.getPlayer());
-            level.playSound(player, pos, clickedState.getSoundType().getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
-            return InteractionResult.sidedSuccess(level.isClientSide);
+    private static class BagTrackContext extends UseOnContext {
+        BagTrackContext(UseOnContext source, ItemStack tracks) {
+            super(source.getLevel(), source.getPlayer(), source.getHand(), tracks,
+                    ((UseOnContextInvoker) source).cdg_getHitResult());
         }
-
     }
 
     public void registerModelOverrides() {

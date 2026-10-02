@@ -2,8 +2,8 @@ package com.jesz.createdieselgenerators.content.tools.wire_cutters;
 
 import com.jesz.createdieselgenerators.CDGRecipes;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.math.VecHelper;
+import com.simibubi.create.foundation.utility.AnimationTickHolder;
+import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;

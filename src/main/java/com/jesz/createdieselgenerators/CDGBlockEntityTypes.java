@@ -54,18 +54,22 @@ public class CDGBlockEntityTypes {
             .renderer(() -> ChemicalTurretRenderer::new)
             .register();
     public static final BlockEntityEntry<DieselEngineBlockEntity> DIESEL_ENGINE = REGISTRATE.blockEntity("diesel_engine_tile_entity", DieselEngineBlockEntity::new)
+            .instance(() -> ShaftInstance::new)
             .validBlocks(CDGBlocks.DIESEL_ENGINE)
             .renderer(() -> DieselEngineRenderer::new)
             .register();
     public static final BlockEntityEntry<ModularDieselEngineBlockEntity> MODULAR_DIESEL_ENGINE = REGISTRATE.blockEntity("large_diesel_engine_tile_entity", ModularDieselEngineBlockEntity::new)
+            .instance(() -> ShaftInstance::new)
             .validBlocks(CDGBlocks.MODULAR_DIESEL_ENGINE)
             .renderer(() -> ModularDieselEngineRenderer::new)
             .register();
     public static final BlockEntityEntry<HugeDieselEngineBlockEntity> HUGE_DIESEL_ENGINE = REGISTRATE.blockEntity("huge_diesel_engine_block_entity", HugeDieselEngineBlockEntity::new)
+            .instance(() -> HugeDieselEngineInstance::new)
             .validBlocks(CDGBlocks.HUGE_DIESEL_ENGINE)
             .renderer(() -> HugeDieselEngineRenderer::new)
             .register();
     public static final BlockEntityEntry<PoweredEngineShaftBlockEntity> POWERED_ENGINE_SHAFT = REGISTRATE.blockEntity("powered_engine_shaft_block_entity", PoweredEngineShaftBlockEntity::new)
+            .instance(() -> SingleRotatingInstance::new)
             .validBlocks(CDGBlocks.POWERED_ENGINE_SHAFT)
             .renderer(() -> KineticBlockEntityRenderer::new)
             .register();
@@ -74,6 +78,7 @@ public class CDGBlockEntityTypes {
             .renderer(() -> BasinLidRenderer::new)
             .register();
     public static final BlockEntityEntry<PumpjackBearingBlockEntity> PUMPJACK_BEARING = REGISTRATE.blockEntity("pumpjack_bearing_block_entity", PumpjackBearingBlockEntity::new)
+            .instance(() -> NoShaftBearingInstance::new)
             .validBlocks(CDGBlocks.PUMPJACK_BEARING)
             .renderer(() -> NoShaftBearingRenderer::new)
             .register();
@@ -97,6 +102,7 @@ public class CDGBlockEntityTypes {
             .renderer(() -> PumpjackHoleRenderer::new)
             .register();
     public static final BlockEntityEntry<PumpjackCrankBlockEntity> PUMPJACK_CRANK = REGISTRATE.blockEntity("pumpjack_crank_block_entity", PumpjackCrankBlockEntity::new)
+            .instance(() -> PumpjackCrankInstance::new)
             .validBlocks(CDGBlocks.PUMPJACK_CRANK)
             .renderer(() -> PumpjackCrankRenderer::new)
             .register();

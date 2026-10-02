@@ -1,9 +1,9 @@
 package com.jesz.createdieselgenerators.content.diesel_engine.huge;
 
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
-import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.nbt.NBTHelper;
+import com.simibubi.create.foundation.utility.Couple;
+import com.simibubi.create.foundation.utility.Pair;
+import com.simibubi.create.foundation.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

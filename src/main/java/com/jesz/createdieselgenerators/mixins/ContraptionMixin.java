@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Contraption.class)
 public abstract class ContraptionMixin {
-    @Shadow protected abstract BlockPos toLocalPos(BlockPos globalPos);
+    @Shadow(remap = false) protected abstract BlockPos toLocalPos(BlockPos globalPos);
 
     @Inject(method = "getBlockEntityNBT", at=@At("RETURN"), remap = false)
     public void getBlockEntityNBT(Level world, BlockPos pos, CallbackInfoReturnable<CompoundTag> cir){

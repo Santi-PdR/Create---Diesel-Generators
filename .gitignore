@@ -22,3 +22,14 @@ eclipse
 run
 
 .profileconfig.json
+
+# Python verification tools
+__pycache__/
+*.py[cod]
+
+# Runtime verification worlds
+run-gametest/
+run-client-smoke/
+
+# Local dependency inspection scratch files
+/.cache/

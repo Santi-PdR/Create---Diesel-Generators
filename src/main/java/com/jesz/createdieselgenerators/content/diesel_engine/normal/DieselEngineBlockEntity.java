@@ -88,7 +88,7 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
 
     @Override
     public float calculateAddedStressCapacity() {
-        float capacity = upgrade.getCapacity(getFuelCapacity() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        float capacity = getUpgradedFuelCapacity(1);
         lastCapacityProvided = capacity;
         return capacity;
     }
@@ -113,7 +113,7 @@ public class DieselEngineBlockEntity extends GeneratingKineticBlockEntity implem
     public void tick() {
         super.tick();
 
-        float fuelCapacity = upgrade.getCapacity(getFuelCapacity() * (1 / upgrade.getSpeed(getFuelSpeed(), this)) * getFuelSpeed(), this);
+        float fuelCapacity = getUpgradedFuelCapacity(1);
         if (!level.isClientSide && (lastSpeed != getGeneratedSpeed() || lastCapacity != fuelCapacity)) {
             reActivateSource = true;
             lastSpeed = getGeneratedSpeed();

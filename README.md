@@ -9,7 +9,15 @@ Adding Diesel Generators and industrial-like features to the <a href="https://ww
 
 ### Port 1.20.1
 
-This branch targets Minecraft 1.20.1 Forge and Create 0.5.1.j. Build it with Java 17; the supplied Create, Flywheel and Registrate jars are kept in `libs/` because this Create release is not available from the configured Maven repository.
+This branch ports **1.3.12** to **Minecraft 1.20.1 / Forge 47.1.30 / Create 0.5.1.j / Java 17**. The supplied Create, Flywheel 0.6.11-13 and Registrate jars are kept in `libs/`; Ponder is provided by Create itself.
+
+```bash
+./gradlew --no-daemon clean build
+```
+
+The [port status and verification guide](PORT_STATUS.md) documents the implemented fixes, target-specific recipe differences, networking protocol 4, and the isolated GameTest/client smoke suites. GitHub Actions builds the reobfuscated mod, verifies its packaged resources/refmap, runs all required GameTests and launches a real software-GL client world. The JAR and verification logs are available in the workflow artifacts.
+
+Both client and server must use this port revision. Its tests are not included in the distribution JAR. `-PportTests runClient` is an **opt-in test harness**, not the normal play configuration; use a clean `run-client-smoke/` test directory when repeating it.
 
 ### Overview
 The main focus of this mod is to provide a streamlined implementation of industrial-like features to the create mod while maintaining its style.

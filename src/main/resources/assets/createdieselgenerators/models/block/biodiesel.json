@@ -1,5 +1,5 @@
 {
   "textures": {
-    "particle": "createdieselgenerators:fluid/biodiesel_still"
+    "particle": "createdieselgenerators:block/biodiesel_still"
   }
 }

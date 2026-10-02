@@ -6,7 +6,7 @@ import com.simibubi.create.content.logistics.filter.AttributeFilterMenu;
 import com.simibubi.create.content.logistics.filter.FilterItem;
 import com.simibubi.create.content.logistics.filter.ItemAttribute;
 import com.simibubi.create.foundation.utility.Lang;
-import net.createmod.catnip.nbt.NBTHelper;
+import com.simibubi.create.foundation.utility.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -67,8 +67,7 @@ public class EntityFilterItem extends Item {
         if (!filter.hasTag())
             return list;
 
-        AttributeFilterMenu.WhitelistMode whitelistMode = AttributeFilterMenu.WhitelistMode.values()[filter.getOrCreateTag()
-                .getInt("WhitelistMode")];
+        AttributeFilterMenu.WhitelistMode whitelistMode = getWhitelistMode(filter);
         list.add((whitelistMode == AttributeFilterMenu.WhitelistMode.WHITELIST_CONJ
                 ? Lang.translateDirect("gui.attribute_filter.allow_list_conjunctive")
                 : whitelistMode == AttributeFilterMenu.WhitelistMode.WHITELIST_DISJ
@@ -99,6 +98,13 @@ public class EntityFilterItem extends Item {
 
 
         return list;
+    }
+
+    public static AttributeFilterMenu.WhitelistMode getWhitelistMode(ItemStack stack) {
+        int ordinal = stack.hasTag() ? stack.getTag().getInt("Whitelist") : 0;
+        var modes = AttributeFilterMenu.WhitelistMode.values();
+        return ordinal >= 0 && ordinal < modes.length ? modes[ordinal]
+                : AttributeFilterMenu.WhitelistMode.WHITELIST_DISJ;
     }
 
     public static boolean test(ItemStack stack, Entity entity){

@@ -14,8 +14,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOptionBehaviour;
 import com.simibubi.create.foundation.utility.Lang;
-import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.data.Pair;
+import com.simibubi.create.foundation.utility.Couple;
+import com.simibubi.create.foundation.utility.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -214,7 +214,7 @@ public class HugeDieselEngineBlockEntity extends SmartBlockEntity implements IHa
             return null;
 
         axis = KineticBlockEntityRenderer.getRotationAxisOf(shaft);
-        angle = 0;
+        angle = KineticBlockEntityRenderer.getAngleForTe(shaft, shaft.getBlockPos(), axis);
         if (axis == facingAxis)
             return null;
         if (axis.isHorizontal() && (facingAxis == Direction.Axis.X ^ facing.getAxisDirection() == Direction.AxisDirection.POSITIVE))

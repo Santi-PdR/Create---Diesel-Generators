@@ -9,7 +9,7 @@ import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRendere
 import com.simibubi.create.foundation.item.render.PartialItemModelRenderer;
 
 import com.jozufozu.flywheel.util.transform.TransformStack;
-import net.createmod.catnip.math.VecHelper;
+import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.RandomSource;

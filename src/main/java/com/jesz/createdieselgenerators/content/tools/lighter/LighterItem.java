@@ -122,7 +122,13 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
         BlockState blockstate = level.getBlockState(blockpos);
         ItemStack itemstack = context.getItemInHand();
         if (itemstack.getTag() == null || itemstack.getTag().getInt("Type") != 2)
-            return use(context.getLevel(), context.getPlayer(), context.getHand()).getResult();
+            return player == null ? InteractionResult.PASS : use(level, player, context.getHand()).getResult();
+        FluidStack fuel = readFluid(itemstack);
+        if (fuel.isEmpty() || FuelType.getTypeFor(level.registryAccess().lookupOrThrow(CDGRegistries.FUEL_TYPE),
+                fuel.getFluid()).normal().speed() == 0) {
+            itemstack.getTag().putInt("Type", 1);
+            return InteractionResult.FAIL;
+        }
         if (!CampfireBlock.canLight(blockstate) && !CandleBlock.canLight(blockstate) &&
                 !CandleCakeBlock.canLight(blockstate) && !blockstate.is(CDGTags.LIGHTER_LIGHTABLE)) {
             BlockPos blockpos1 = blockpos.relative(context.getClickedFace());
@@ -147,7 +153,7 @@ public class LighterItem extends Item implements CapacityEnchantment.ICapacityEn
                 }
                 return InteractionResult.sidedSuccess(level.isClientSide());
             } else {
-                return use(context.getLevel(), context.getPlayer(), context.getHand()).getResult();
+                return player == null ? InteractionResult.PASS : use(level, player, context.getHand()).getResult();
             }
         } else {
             level.playSound(player, blockpos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.4F + 0.8F);

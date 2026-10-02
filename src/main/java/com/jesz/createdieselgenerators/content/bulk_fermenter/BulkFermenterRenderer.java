@@ -8,7 +8,7 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 import com.simibubi.create.foundation.item.SmartInventory;
 import com.jozufozu.flywheel.util.transform.TransformStack;
-import net.createmod.catnip.data.Iterate;
+import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.render.CachedBufferer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

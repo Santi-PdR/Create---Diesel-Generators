@@ -20,7 +20,7 @@ import java.util.List;
 
 @Mixin(BasinRenderer.class)
 public abstract class BasinRendererMixin {
-    @Shadow protected abstract void renderItem(PoseStack ms, MultiBufferSource buffer, int light, int overlay, ItemStack stack);
+    @Shadow(remap = false) protected abstract void renderItem(PoseStack ms, MultiBufferSource buffer, int light, int overlay, ItemStack stack);
 
     @Inject(method = "renderItem", at=@At("HEAD"), remap = false, cancellable = true)
     public void renderItem(PoseStack ms, MultiBufferSource buffer, int light, int overlay, ItemStack stack, CallbackInfo ci){

@@ -13,13 +13,31 @@ archivesBaseName = 'createdieselgenerators'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+// Runtime regressions use the real Forge/Create classes, but are never shipped
+// in the mod jar. The client harness is opt-in with -PportTests.
+sourceSets {
+    gameTest {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
 minecraft {
 
     mappings channel: 'official', version: '1.20.1'
 
     runs {
+        // FG 5 defaults to System.exit(0) in the *Gradle daemon* after a
+        // successful run. Disable that hook so CI receives the real result.
+        configureEach { forceExit false }
+
         client {
-            workingDirectory project.file('run')
+            workingDirectory project.file(project.hasProperty('portTests') ? 'run-client-smoke' : 'run')
+            if (project.hasProperty('portTests')) {
+                property 'cdg.port.clientSmoke', 'true'
+                property 'fml.earlyprogresswindow', 'false'
+            }
 
             property 'forge.logging.markers', 'REGISTRIES'
 
@@ -32,6 +50,8 @@ minecraft {
             mods {
                 createdieselgenerators {
                     source sourceSets.main
+                    if (project.hasProperty('portTests'))
+                        source sourceSets.gameTest
                 }
             }
         }
@@ -55,7 +75,7 @@ minecraft {
         }
 
         gameTestServer {
-            workingDirectory project.file('run')
+            workingDirectory project.file('run-gametest')
 
             property 'forge.logging.markers', 'REGISTRIES'
 
@@ -68,6 +88,7 @@ minecraft {
             mods {
                 createdieselgenerators {
                     source sourceSets.main
+                    source sourceSets.gameTest
                 }
             }
         }
@@ -92,7 +113,8 @@ minecraft {
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+// Hand-written resources are authoritative over historical data-generation
+// output. processResources adds only generated paths without a main override.
 
 repositories {
     flatDir { dirs 'libs' }
@@ -142,7 +164,6 @@ dependencies {
     // Create 0.5.1.j is supplied by the target installation because this
     // release is no longer published in the Create Maven repository.
     implementation fg.deobf('com.simibubi.create:create:0.5.1.j')
-    implementation(fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}"))
     compileOnly fg.deobf('com.jozufozu.flywheel:flywheel-forge:0.6.11-13')
     compileOnly fg.deobf('com.tterrag.registrate:Registrate-MC1.20:1.3.3')
     runtimeOnly fg.deobf('com.jozufozu.flywheel:flywheel-forge:0.6.11-13')
@@ -156,7 +177,8 @@ dependencies {
     runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-1.20.1-forge:1.105.0")
 
     implementation fg.deobf("curse.maven:selene-499980:4980621")
-    implementation fg.deobf("curse.maven:createaddition-439890:6256349")
+    // 1.2.5 explicitly supports Create 0.5.1.j; 1.3.0 requires Create >= 6.0.1.
+    implementation fg.deobf("curse.maven:createaddition-439890:6084982")
 
     implementation fg.deobf("dev.latvian.mods:kubejs-forge:2001.6.5-build.20")
 
@@ -208,8 +230,15 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-// The upstream data-generation output overlaps with the historical resources.
-// Keep the first copy so Forge can package the mod without duplicate entries.
+tasks.named('check') {
+    dependsOn tasks.named('gameTestClasses')
+}
+
 tasks.named('processResources') {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from('src/generated/resources') {
+        exclude '.cache/**'
+        exclude { element -> file("src/main/resources/${element.path}").isFile() }
+    }
+    // Do not silently discard any other duplicate introduced by the build.
+    duplicatesStrategy = DuplicatesStrategy.FAIL
 }

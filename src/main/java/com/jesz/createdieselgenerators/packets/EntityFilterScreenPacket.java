@@ -5,6 +5,7 @@ import com.jesz.createdieselgenerators.content.entity_filter.EntityFilterMenu;
 import com.simibubi.create.content.logistics.filter.AttributeFilterMenu;
 import com.simibubi.create.content.logistics.filter.FilterScreenPacket;
 import com.simibubi.create.foundation.networking.SimplePacketBase;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,8 +24,16 @@ public class EntityFilterScreenPacket extends SimplePacketBase {
     }
 
     public EntityFilterScreenPacket(FriendlyByteBuf buffer) {
-        option = FilterScreenPacket.Option.values()[buffer.readInt()];
+        // Keep protocol v3's int + NBT encoding, but reject malformed input
+        // before queuing work on the server thread.
+        int ordinal = buffer.readInt();
+        var options = FilterScreenPacket.Option.values();
+        if (ordinal < 0 || ordinal >= options.length)
+            throw new DecoderException("Unknown entity filter option: " + ordinal);
+        option = options[ordinal];
         data = buffer.readNbt();
+        if (data == null)
+            throw new DecoderException("Missing entity filter data");
     }
 
     @Override
@@ -40,7 +49,7 @@ public class EntityFilterScreenPacket extends SimplePacketBase {
             if (player == null)
                 return;
 
-            if (player.containerMenu instanceof EntityFilterMenu c) {
+            if (player.containerMenu instanceof EntityFilterMenu c && c.stillValid(player)) {
                 if (option == FilterScreenPacket.Option.WHITELIST)
                     c.whitelist = AttributeFilterMenu.WhitelistMode.WHITELIST_DISJ;
                 if (option == FilterScreenPacket.Option.WHITELIST2)
